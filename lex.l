@@ -1,5 +1,10 @@
 %{
-    #define YYSTYPE double
+  #define YYSTYPE double
+  #ifndef LEX
+    #include "brainf.tab.h"
+  #endif
+
+  #ifdef LEX
     enum yytokentype{
       CHAR_INC = 258,
       CHAR_DEC = 259,
@@ -10,9 +15,8 @@
       JUM_BEGIN = 264,
       JUM_END = 265
     };
-    #ifdef LEX
-        YYSTYPE yylval;
-    #endif
+    YYSTYPE yylval;
+  #endif
 %}
 
 %%
@@ -28,12 +32,12 @@
 
 #ifdef LEX
 int main (int argc, char** argv) {
-    int token;
+  int token;
 
-    while (token = yylex()) {
-        printf("%d", token);
-    }
+  while (token = yylex()) {
+    printf("%d", token);
+  }
 
-    return 0;
+  return 0;
 }
 #endif
