@@ -1,20 +1,27 @@
 all: parser
 
-OBJS = lex.o
+OBJS = brainf.tab.o \
+			 main.o \
+			 lex.o \
 
 cl: clean
 
 clean:
-	@$(RM) -rf OBJS lex.cpp lex brainf.tab.cpp brainf.tab.hpp parser
+	@$(RM) -rf $(OBJS) lex.cpp lex brainf.tab.cpp brainf.tab.hpp parser
 
-lex.cpp: lex.l
+brainf.tab.hpp: brainf.tab.cpp
+
+lex.cpp: lex.l brainf.tab.hpp
 	flex -o $@ $^
 
 lex: lex.cpp
-	g++ -D LEX -o $@ $^ -lfl
+	g++ -D LEX -o $@ $^
 
 brainf.tab.cpp: brainf.y
 	bison -d -o $@ $^
 
-parser: brainf.tab.cpp lex.cpp
-	g++ -o $@ $^ -lfl
+%.o: %.cpp
+	g++ -o $@ -c $<
+
+parser: $(OBJS)
+	g++ -o $@ $(OBJS)

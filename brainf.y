@@ -48,8 +48,3 @@ put_char: PUT_CHAR
 get_char: GET_CHAR
 
 %%
-
-int main (int argc, char** argv) {
-    yyparse();
-    return 0;
-}
