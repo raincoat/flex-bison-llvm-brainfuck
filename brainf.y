@@ -15,18 +15,19 @@ program: stmts
        ;
 
 stmts: expr
-     | expr loop
-     | loop
      ;
+
+expr: char
+    | loop
+    | expr char
+    | expr loop
+    ;
+
 
 loop: JUM_BEGIN expr JUM_END
     | JUM_BEGIN JUM_END
     ;
 
-
-expr: char
-    | expr char
-    ;
 
 char: point_op
     | char_op
