@@ -1,6 +1,8 @@
 %{
     #define YYSTYPE double
     #include <stdio.h>
+    extern int yylex();
+    void yyerror(const char *s) { printf("Error: %s\n", s);  }
 %}
 
 %token CHAR_INC CHAR_DEC POINT_INC POINT_DEC PUT_CHAR GET_CHAR
@@ -18,6 +20,7 @@ stmts: expr
      ;
 
 loop: JUM_BEGIN expr JUM_END
+    | JUM_BEGIN JUM_END
     ;
 
 
@@ -48,8 +51,4 @@ get_char: GET_CHAR
 int main (int argc, char** argv) {
     yyparse();
     return 0;
-}
-
-yyerror (char *s) {
-    fprintf(stderr, "error: %sn", s);
 }

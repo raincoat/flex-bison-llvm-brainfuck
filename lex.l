@@ -1,7 +1,7 @@
 %{
   #define YYSTYPE double
   #ifndef LEX
-    #include "brainf.tab.h"
+    #include "brainf.tab.hpp"
   #endif
 
   #ifdef LEX
@@ -17,7 +17,9 @@
     };
     YYSTYPE yylval;
   #endif
+  extern "C" int yywrap() { }
 %}
+
 
 %%
 "+"  { return CHAR_INC; }

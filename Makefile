@@ -5,16 +5,16 @@ OBJS = lex.o
 cl: clean
 
 clean:
-	@$(RM) -rf OBJS lex.c lex brainf.tab.c brainf.tab.h parser
+	@$(RM) -rf OBJS lex.cpp lex brainf.tab.cpp brainf.tab.hpp parser
 
-lex.c: lex.l
+lex.cpp: lex.l
 	flex -o $@ $^
 
-lex: lex.c
-	gcc -D LEX -o $@ $^ -lfl
+lex: lex.cpp
+	g++ -D LEX -o $@ $^ -lfl
 
-brainf.tab.c: brainf.y
+brainf.tab.cpp: brainf.y
 	bison -d -o $@ $^
 
-parser: brainf.tab.c lex.c
-	gcc -o $@ $^ -lfl
+parser: brainf.tab.cpp lex.cpp
+	g++ -o $@ $^ -lfl
