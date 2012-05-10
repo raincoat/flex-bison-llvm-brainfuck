@@ -26,7 +26,7 @@
 program: stmts {programBlock = $1;}
        ;
 
-stmts: stmt {$$ = new NBlock(); printf("ccc");}
+stmts: stmt {$$ = new NBlock(); }
      | stmts stmt
      ;
 
