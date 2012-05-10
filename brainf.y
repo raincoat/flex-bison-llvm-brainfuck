@@ -9,6 +9,8 @@
 
 %union {
     NBlock *block;
+    NStmt *stmt;
+    NLoop *loop;
     std::string *string;
     int token;
 }
@@ -17,6 +19,8 @@
 %token <token> JUM_BEGIN JUM_END
 
 %type <block> stmts
+%type <stmt> factor point_op char_op
+%type <loop> loop
 
 
 
@@ -34,21 +38,21 @@ stmt: factor
     | loop
     ;
 
-loop: JUM_BEGIN stmts JUM_END
-     | JUM_BEGIN JUM_END
-     ;
+loop: JUM_BEGIN stmts JUM_END {$$ = new NLoop();}
+    | JUM_BEGIN JUM_END {$$ = new NLoop();}
+    ;
 
 factor: point_op
       | char_op
-      | PUT_CHAR
-      | GET_CHAR
+      | PUT_CHAR {$$ = new NOut();}
+      | GET_CHAR {$$ = new NInp();}
       ;
 
-point_op: POINT_INC
-        | POINT_DEC
+point_op: POINT_INC {$$ = new NPosOp($1);}
+        | POINT_DEC {$$ = new NPosOp($1);}
         ;
 
-char_op: CHAR_DEC
-       | CHAR_INC
+char_op: CHAR_DEC {$$ = new NValOp($1);}
+       | CHAR_INC {$$ = new NValOp($1);}
        ;
 %%

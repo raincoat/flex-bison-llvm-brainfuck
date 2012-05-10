@@ -1,6 +1,7 @@
 all: parser
 
 OBJS = brainf.tab.o \
+			 codegen.o \
 			 main.o \
 			 lex.o \
 

@@ -7,34 +7,39 @@ class Node {
     virtual void CodeGen() {}
 };
 
-class NBlock : public Node {
-  public:
-    virtual void CodeGen() {}
+class NStmt : public Node {
 };
 
-class Ninp : public Node {
+class NBlock : public NStmt {
   public:
-    virtual void CodeGen() {}
+    virtual void CodeGen();
 };
 
-class Nout : public Node {
+class NInp : public NStmt {
   public:
-    virtual void CodeGen() {}
+    virtual void CodeGen();
 };
 
-class NValOp: public Node {
+class NOut : public NStmt {
   public:
-    virtual void CodeGen() {}
+    virtual void CodeGen();
 };
 
-class NPosOp : public Node {
+class NValOp: public NStmt {
   public:
-    virtual void CodeGen() {}
+    int op;
+    NValOp(int op): op(op){}
+    virtual void CodeGen();
 };
 
-class NLoop : public Node {
+class NPosOp : public NStmt {
   public:
-    virtual void CodeGen() {}
+    int op;
+    NPosOp(int op): op(op){}
+    virtual void CodeGen();
 };
 
-
+class NLoop : public NStmt {
+  public:
+    virtual void CodeGen();
+};
