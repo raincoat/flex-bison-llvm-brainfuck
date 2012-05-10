@@ -1,39 +1,48 @@
 %{
-    #define YYSTYPE double
-    #include <stdio.h>
+    #include "node.hpp"
+    #include <cstdio>
+    #include <cstdlib>
+    NBlock *programBlock;
     extern int yylex();
     void yyerror(const char *s) { printf("Error: %s\n", s);  }
 %}
 
-%token CHAR_INC CHAR_DEC POINT_INC POINT_DEC PUT_CHAR GET_CHAR
-%token JUM_BEGIN JUM_END
+%union {
+    NBlock *block;
+    std::string *string;
+    int token;
+}
+
+%token <token> CHAR_INC CHAR_DEC POINT_INC POINT_DEC PUT_CHAR GET_CHAR
+%token <token> JUM_BEGIN JUM_END
+
+%type <block> stmts
+
+
 
 %start program
 
 %%
-program: stmts
+program: stmts {programBlock = $1;}
        ;
 
-stmts: expr
+stmts: stmt {$$ = new NBlock(); printf("ccc");}
+     | stmts stmt
      ;
 
-expr: char
+stmt: factor
     | loop
-    | expr char
-    | expr loop
     ;
 
+loop: JUM_BEGIN stmts JUM_END
+     | JUM_BEGIN JUM_END
+     ;
 
-loop: JUM_BEGIN expr JUM_END
-    | JUM_BEGIN JUM_END
-    ;
-
-
-char: point_op
-    | char_op
-    | put_char
-    | get_char
-    ;
+factor: point_op
+      | char_op
+      | PUT_CHAR
+      | GET_CHAR
+      ;
 
 point_op: POINT_INC
         | POINT_DEC
@@ -42,9 +51,4 @@ point_op: POINT_INC
 char_op: CHAR_DEC
        | CHAR_INC
        ;
-
-put_char: PUT_CHAR
-
-get_char: GET_CHAR
-
 %%

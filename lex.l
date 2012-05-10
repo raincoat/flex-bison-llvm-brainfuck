@@ -1,6 +1,6 @@
 %{
-  #define YYSTYPE double
   #ifndef LEX
+    #include "node.hpp"
     #include "brainf.tab.hpp"
   #endif
 
