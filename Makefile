@@ -26,3 +26,12 @@ brainf.tab.cpp: brainf.y
 
 parser: $(OBJS)
 	g++ -o $@ $(OBJS)
+
+t.expr:
+	echo ".+..." | ./parser
+
+t.out:
+	echo "," | ./parser
+
+t.in:
+	echo "." | ./parser
