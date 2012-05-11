@@ -1,10 +1,15 @@
 #include <iostream>
 #include <vector>
 
+class NStmt;
+
+typedef std::vector<NStmt*> StmtList;
+
+
 class Node {
   public:
     virtual ~Node() {}
-    virtual void CodeGen() {}
+    virtual void codeGen() {}
 };
 
 class NStmt : public Node {
@@ -12,34 +17,36 @@ class NStmt : public Node {
 
 class NBlock : public NStmt {
   public:
-    virtual void CodeGen();
+    StmtList stmtList;
+    NBlock(){}
+    virtual void codeGen();
 };
 
 class NInp : public NStmt {
   public:
-    virtual void CodeGen();
+    virtual void codeGen();
 };
 
 class NOut : public NStmt {
   public:
-    virtual void CodeGen();
+    virtual void codeGen();
 };
 
 class NValOp: public NStmt {
   public:
     int op;
     NValOp(int op): op(op){}
-    virtual void CodeGen();
+    virtual void codeGen();
 };
 
 class NPosOp : public NStmt {
   public:
     int op;
     NPosOp(int op): op(op){}
-    virtual void CodeGen();
+    virtual void codeGen();
 };
 
 class NLoop : public NStmt {
   public:
-    virtual void CodeGen();
+    virtual void codeGen();
 };

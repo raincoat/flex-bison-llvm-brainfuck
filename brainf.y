@@ -30,8 +30,8 @@
 program: stmts {programBlock = $1;}
        ;
 
-stmts: stmt {$$ = new NBlock(); }
-     | stmts stmt
+stmts: stmt {$$ = new NBlock(); $$->stmtList.push_back($<stmt>1);}
+     | stmts stmt {$$->stmtList.push_back($<stmt>2);}
      ;
 
 stmt: factor
