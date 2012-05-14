@@ -48,5 +48,7 @@ class NPosOp : public NStmt {
 
 class NLoop : public NStmt {
   public:
+    NBlock block;
+    NLoop(NBlock& block): block(block) {}
     virtual void codeGen();
 };

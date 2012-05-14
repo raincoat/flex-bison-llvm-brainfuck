@@ -35,3 +35,6 @@ t.out:
 
 t.in:
 	echo "." | ./parser
+
+t.loop:
+	echo ".[..[.]]" | ./parser

@@ -9,36 +9,33 @@ void CodeGenContext::generateCode(NBlock& root){
 
 void NBlock::codeGen()
 {
-  std::cout << "正在生成Block" << endl;
 
   StmtList::const_iterator it;
 
   for (it = stmtList.begin(); it != stmtList.end(); it++) {
-    std::cout << "Generating code for block "  << endl;
+    std::cout << "正在生成stmt" << endl;
+    (**it).codeGen();
   }
 }
 
 void NInp::codeGen()
 {
-  std::cout << "正在生成Block" << endl;
 }
 
 void NOut::codeGen()
 {
-  std::cout << "正在生成Block" << endl;
 }
 
 void NValOp::codeGen()
 {
-  std::cout << "正在生成Block" << endl;
 }
 
 void NPosOp::codeGen()
 {
-  std::cout << "正在生成Block" << endl;
 }
 
 void NLoop::codeGen()
 {
-  std::cout << "正在生成Block" << endl;
+  std::cout << "正在生成NLoop" << endl;
+  block.codeGen();
 }

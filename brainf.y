@@ -38,8 +38,7 @@ stmt: factor
     | loop
     ;
 
-loop: JUM_BEGIN stmts JUM_END {$$ = new NLoop();}
-    | JUM_BEGIN JUM_END {$$ = new NLoop();}
+loop: JUM_BEGIN stmts JUM_END {$$ = new NLoop(*$2);}
     ;
 
 factor: point_op
