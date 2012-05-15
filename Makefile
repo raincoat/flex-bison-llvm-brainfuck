@@ -5,6 +5,12 @@ OBJS = brainf.tab.o \
 			 main.o \
 			 lex.o \
 
+LLVM_MODULES = core jit native
+
+CPPFLAGS = `llvm-config --cppflags $(LLVM_MODULES)`
+LDFLAGS = `llvm-config --ldflags $(LLVM_MODULES)`
+LIBS = `llvm-config --libs $(LLVM_MODULES)`
+
 cl: clean
 
 clean:
@@ -22,13 +28,13 @@ brainf.tab.cpp: brainf.y
 	bison -d -o $@ $^
 
 %.o: %.cpp
-	g++ -o $@ -c $<
+	g++ -o $@ ${CPPFLAGS} -c $<
 
 parser: $(OBJS)
-	g++ -o $@ $(OBJS)
+	g++ -o $@ $(LDFLAGS) $(OBJS) $(LIBS) -ldl -pthread
 
 t.expr:
-	echo ".+..." | ./parser
+	echo "++++," | ./parser
 
 t.out:
 	echo "," | ./parser

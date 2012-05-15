@@ -10,7 +10,11 @@ extern int yyparse();
 int main (int argc, char** argv) {
     yyparse();
     std::cout<< programBlock << endl;
-    CodeGenContext ct ;
-    ct.generateCode(*programBlock);
+
+    InitializeNativeTarget();
+    CodeGenContext context;
+    context.generateCode(*programBlock);
+    context.runCode();
+
     return 0;
 }
