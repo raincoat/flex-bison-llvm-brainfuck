@@ -37,10 +37,10 @@ t.expr:
 	echo "++++," | ./parser
 
 t.out:
-	echo "," | ./parser
+	echo "." | ./parser
 
 t.in:
-	echo "." | ./parser
+	echo "," | ./parser
 
 t.loop:
 	echo ".[..[.]]" | ./parser

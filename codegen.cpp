@@ -57,10 +57,23 @@ Value* NBlock::codeGen(CodeGenContext& context)
 
 void NInp::codeGen()
 {
+
 }
 
-void NOut::codeGen()
+Value* NOut::codeGen(CodeGenContext& context)
 {
+  ConstantInt* const_int32_3 = ConstantInt::get(getGlobalContext(),
+                                                APInt(32, StringRef("32"), 10)
+                                                );
+  Value* putchar_params[] = {
+    const_int32_3
+  };
+  CallInst* putchar_call = CallInst::Create(context.putchar_func,
+                                             putchar_params, "",
+                                             context.currentBlock());
+  putchar_call->setTailCall(false);
+  return putchar_call;
+
 }
 
 void NValOp::codeGen()

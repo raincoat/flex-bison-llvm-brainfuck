@@ -32,8 +32,7 @@ class CodeGenContext{
   Function *mainFunction;
   public:
     Module *module;
-
-    Function *func_putchar;
+    Function *putchar_func;
 
 
     CodeGenContext() {
@@ -41,7 +40,7 @@ class CodeGenContext{
       module = new Module("main", gC);
       /* header */
       // declare i32 @putchar(i32)
-      func_putchar = cast<Function>(module->
+      putchar_func = cast<Function>(module->
           getOrInsertFunction("putchar", IntegerType::getInt32Ty(gC),
                               IntegerType::getInt32Ty(gC), NULL));
 

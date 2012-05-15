@@ -31,7 +31,7 @@ class NInp : public NStmt {
 
 class NOut : public NStmt {
   public:
-    virtual void codeGen();
+    virtual llvm::Value* codeGen(CodeGenContext& context);
 };
 
 class NValOp: public NStmt {
