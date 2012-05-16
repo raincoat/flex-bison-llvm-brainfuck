@@ -68,9 +68,8 @@ Value* NOut::codeGen(CodeGenContext& context)
   Value* putchar_params[] = {
     const_int32_3
   };
-  CallInst* putchar_call = CallInst::Create(context.putchar_func,
-                                             putchar_params, "",
-                                             context.currentBlock());
+  CallInst* putchar_call = context.currentBuilder()->CreateCall(context.putchar_func,
+                                             putchar_params );
   putchar_call->setTailCall(false);
   return putchar_call;
 

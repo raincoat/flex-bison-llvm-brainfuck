@@ -24,7 +24,8 @@ class NBlock;
 class CodeGenBlock {
   public:
     BasicBlock *block;
-    std::map<std::string, Value*> locals;
+    IRBuilder<> *builder;
+    std::map<std::string, Value *> locals;
 };
 
 class CodeGenContext{
@@ -33,7 +34,6 @@ class CodeGenContext{
   public:
     Module *module;
     Function *putchar_func;
-
 
     CodeGenContext() {
       LLVMContext &gC = getGlobalContext(); // globalContext
@@ -51,9 +51,12 @@ class CodeGenContext{
 
     std::map<std::string, Value*>& locals() { return blocks.top()->locals; }
     BasicBlock *currentBlock() { return blocks.top()->block; }
+    IRBuilder<> *currentBuilder() { return blocks.top()->builder;}
 
     void pushBlock(BasicBlock *block) {
-      blocks.push(new CodeGenBlock()); blocks.top()->block = block;
+      blocks.push(new CodeGenBlock());
+      blocks.top()->block = block;
+      blocks.top()->builder = new IRBuilder<>(blocks.top()->block);
     }
 
     void popBlock() {
