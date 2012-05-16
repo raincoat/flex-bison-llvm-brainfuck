@@ -7,6 +7,7 @@
 #include <llvm/LLVMContext.h>
 #include <llvm/PassManager.h>
 #include <llvm/Instructions.h>
+#include <llvm/Intrinsics.h>
 #include <llvm/CallingConv.h>
 #include <llvm/Bitcode/ReaderWriter.h>
 #include <llvm/Analysis/Verifier.h>
@@ -28,22 +29,23 @@ class CodeGenBlock {
     std::map<std::string, Value *> locals;
 };
 
+static const char *HEAD_LABEL = "head";
+static const char *TAPE_LABEL = "tape";
+
 class CodeGenContext{
   std::stack<CodeGenBlock *> blocks;
   Function *mainFunction;
   public:
     Module *module;
     Function *putchar_func;
+    int cur_value;
+    Value* cur_head;
+    Value* ptr_arr;
 
-    CodeGenContext() {
+    CodeGenContext()
+    {
       LLVMContext &gC = getGlobalContext(); // globalContext
       module = new Module("main", gC);
-      /* header */
-      // declare i32 @putchar(i32)
-      putchar_func = cast<Function>(module->
-          getOrInsertFunction("putchar", IntegerType::getInt32Ty(gC),
-                              IntegerType::getInt32Ty(gC), NULL));
-
     }
 
     void generateCode(NBlock& root);

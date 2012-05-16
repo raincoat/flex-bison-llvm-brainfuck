@@ -1,4 +1,4 @@
-all: parser
+all: clean parser
 
 OBJS = brainf.tab.o \
 			 codegen.o \
@@ -13,7 +13,7 @@ LIBS = `llvm-config --libs $(LLVM_MODULES)`
 
 cl: clean
 
-clm: clean all
+m: parser
 
 clean:
 	@$(RM) -rf $(OBJS) lex.cpp lex brainf.tab.cpp brainf.tab.hpp parser
