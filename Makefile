@@ -13,6 +13,8 @@ LIBS = `llvm-config --libs $(LLVM_MODULES)`
 
 cl: clean
 
+clm: clean all
+
 clean:
 	@$(RM) -rf $(OBJS) lex.cpp lex brainf.tab.cpp brainf.tab.hpp parser
 
