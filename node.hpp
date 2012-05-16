@@ -11,7 +11,7 @@ typedef std::vector<NStmt*> StmtList;
 class Node {
   public:
     virtual ~Node() {}
-    virtual llvm::Value* codeGen(CodeGenContext& context) { }
+    virtual llvm::Value *codeGen(CodeGenContext &context) {}
 };
 
 class NStmt : public Node {
@@ -21,31 +21,33 @@ class NBlock : public NStmt {
   public:
     StmtList stmtList;
     NBlock(){}
-    virtual llvm::Value* codeGen(CodeGenContext& context);
+    virtual llvm::Value *codeGen(CodeGenContext &context);
 };
 
 class NInp : public NStmt {
   public:
-    virtual void codeGen();
+    virtual llvm::Value *codeGen(CodeGenContext &context);
 };
 
 class NOut : public NStmt {
   public:
-    virtual llvm::Value* codeGen(CodeGenContext& context);
+    virtual llvm::Value *codeGen(CodeGenContext &context);
 };
 
 class NValOp: public NStmt {
   public:
     int op;
-    NValOp(int op): op(op){}
-    virtual void codeGen();
+    NValOp(int op): op(op){
+      std::cout<<"op"<<op<<std::endl;
+    }
+    virtual llvm::Value *codeGen(CodeGenContext &context);
 };
 
 class NPosOp : public NStmt {
   public:
     int op;
     NPosOp(int op): op(op){}
-    virtual void codeGen();
+    virtual llvm::Value *codeGen(CodeGenContext &context);
 };
 
 class NLoop : public NStmt {

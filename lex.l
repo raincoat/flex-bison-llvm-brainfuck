@@ -2,6 +2,7 @@
   #ifndef LEX
     #include "node.hpp"
     #include "brainf.tab.hpp"
+    #define TOKEN(t) (yylval.token = t)
   #endif
 
   #ifdef LEX
@@ -22,14 +23,14 @@
 
 
 %%
-"+"  { return CHAR_INC; }
-"-"  { return CHAR_DEC; }
-">"  { return POINT_INC; }
-"<"  { return POINT_DEC; }
-"."  { return PUT_CHAR; }
-","  { return GET_CHAR; }
-"["  { return JUM_BEGIN; }
-"]"  { return JUM_END; }
+"+"  { return TOKEN(CHAR_INC); }
+"-"  { return TOKEN(CHAR_DEC); }
+">"  { return TOKEN(POINT_INC); }
+"<"  { return TOKEN(POINT_DEC); }
+"."  { return TOKEN(PUT_CHAR); }
+","  { return TOKEN(GET_CHAR); }
+"["  { return TOKEN(JUM_BEGIN); }
+"]"  { return TOKEN(JUM_END); }
 %%
 
 #ifdef LEX

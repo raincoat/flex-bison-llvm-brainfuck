@@ -38,6 +38,7 @@ class CodeGenContext{
   public:
     Module *module;
     Function *putchar_func;
+    Function *getchar_func;
     int cur_value;
     Value* cur_head;
     Value* ptr_arr;

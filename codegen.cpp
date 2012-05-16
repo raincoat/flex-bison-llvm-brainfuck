@@ -24,6 +24,10 @@ void CodeGenContext::generateCode(NBlock& root)
   };
   Function *memset_func = Intrinsic::getDeclaration(module, Intrinsic::memset,
                                                     memset_params_type);
+  // declare i32 @getchar(i32)
+
+  getchar_func = cast<Function>(module->
+      getOrInsertFunction("getchar", IntegerType::getInt32Ty(gC), NULL));
 
   // declare i32 @putchar(i32)
 
@@ -44,7 +48,7 @@ void CodeGenContext::generateCode(NBlock& root)
   // call memset
   Value*memset_params[]={
     ptr_arr,
-    ConstantInt::get(gC,APInt(8,0)),
+    ConstantInt::get(gC,APInt(8, 97)),
     val_mem,
     ConstantInt::get(gC,APInt(32,1)),
     ConstantInt::get(gC,APInt(1,0))
@@ -75,11 +79,11 @@ void CodeGenContext::generateCode(NBlock& root)
 /* Executes the AST by running the main function */
 GenericValue CodeGenContext::runCode()
 {
-  std::cout << "Running code...\n";
+  std::cout << "Running code...\n"<<std::endl;
   ExecutionEngine *ee = EngineBuilder(module).create();
   vector<GenericValue> noargs;
   GenericValue v = ee->runFunction(mainFunction, noargs);
-  std::cout << "Code was run.\n";
+  std::cout <<std::endl<< "Code was run.\n";
   return v;
 }
 
@@ -101,32 +105,80 @@ Value* NBlock::codeGen(CodeGenContext& context)
   return last;
 }
 
-void NInp::codeGen()
+Value* NInp::codeGen(CodeGenContext &context)
 {
+  IRBuilder<> *builder = context.currentBuilder();
+  CallInst* getchar_call = builder->CreateCall(context.getchar_func,
+                                               TAPE_LABEL );
+  getchar_call->setTailCall(false);
+  Value *tape_0 = getchar_call;
+  Value *tape_1 = builder->
+    CreateTrunc(tape_0, IntegerType::getInt8Ty(getGlobalContext()), TAPE_LABEL);
 
+  builder->CreateStore(tape_1, context.cur_head);
+  return NULL;
 }
 
-Value* NOut::codeGen(CodeGenContext& context)
+Value* NOut::codeGen(CodeGenContext &context)
 {
-  ConstantInt* const_int32_3 = ConstantInt::get(getGlobalContext(),
-                                                APInt(32, StringRef("32"), 10)
-                                                );
+
+  IRBuilder<> *builder = context.currentBuilder();
+  LoadInst *tape_0 = builder->CreateLoad(context.cur_head, TAPE_LABEL);
+  Value *tape_1 = builder->
+    CreateSExt(tape_0, IntegerType::getInt32Ty(getGlobalContext()), TAPE_LABEL);
+
+
   Value* putchar_params[] = {
-    const_int32_3
+    tape_1
   };
-  CallInst* putchar_call = context.currentBuilder()->CreateCall(context.putchar_func,
-                                             putchar_params );
+  CallInst* putchar_call = builder->CreateCall(context.putchar_func,
+                                               putchar_params );
   putchar_call->setTailCall(false);
   return putchar_call;
 
 }
 
-void NValOp::codeGen()
+Value* NValOp::codeGen(CodeGenContext& context)
 {
+  IRBuilder<> *builder = context.currentBuilder();
+  LoadInst *tape_0 = builder->CreateLoad(context.cur_head, TAPE_LABEL);
+  Value *tape_1;
+
+  ConstantInt *const_int8_1 = ConstantInt::get(getGlobalContext(),
+                                               APInt(8, 1));
+
+  switch(op) {
+    case CHAR_INC:
+      tape_1 = builder->CreateAdd(tape_0, const_int8_1, TAPE_LABEL);
+      break;
+    case CHAR_DEC:
+      tape_1 = builder->CreateSub(tape_0, const_int8_1, TAPE_LABEL);
+      break;
+  }
+
+  builder->CreateStore(tape_1, context.cur_head);
+  return tape_1;
 }
 
-void NPosOp::codeGen()
+Value* NPosOp::codeGen(CodeGenContext& context)
 {
+  IRBuilder<> *builder = context.currentBuilder();
+  APInt cur_value;
+  switch(op){
+    case POINT_INC:
+      cur_value = APInt(32 , 1);
+      break;
+    case POINT_DEC:
+      cur_value = APInt(32 , -1);
+      break;
+  }
+
+  context.cur_head = builder->
+    CreateGEP(context.cur_head,
+              ConstantInt::get(getGlobalContext(), cur_value),
+              HEAD_LABEL);
+
+  return context.cur_head;
 }
 
 void NLoop::codeGen()
