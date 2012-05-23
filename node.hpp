@@ -37,9 +37,7 @@ class NOut : public NStmt {
 class NValOp: public NStmt {
   public:
     int op;
-    NValOp(int op): op(op){
-      std::cout<<"op"<<op<<std::endl;
-    }
+    NValOp(int op): op(op){}
     virtual llvm::Value *codeGen(CodeGenContext &context);
 };
 
@@ -54,5 +52,5 @@ class NLoop : public NStmt {
   public:
     NBlock block;
     NLoop(NBlock& block): block(block) {}
-    virtual void codeGen();
+    virtual llvm::Value *codeGen(CodeGenContext &context);
 };

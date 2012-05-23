@@ -31,6 +31,8 @@ class CodeGenBlock {
 
 static const char *HEAD_LABEL = "head";
 static const char *TAPE_LABEL = "tape";
+static const char *LOOP_TEST_LABEL = "testbb";
+static const char *LOOP_LABEL = "loopbb";
 
 class CodeGenContext{
   std::stack<CodeGenBlock *> blocks;

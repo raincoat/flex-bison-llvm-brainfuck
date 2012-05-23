@@ -2,6 +2,8 @@
 #include "codegen.hpp"
 #include "brainf.tab.hpp"
 using namespace std;
+//static const int MIN_ASCII = 97;
+static const int MIN_ASCII = 0;
 
 void CodeGenContext::generateCode(NBlock& root)
 {
@@ -9,13 +11,14 @@ void CodeGenContext::generateCode(NBlock& root)
   LLVMContext &gC = getGlobalContext(); // globalContext
   ArrayRef<Type*> argTypes;
   FunctionType *ftype = FunctionType::get(Type::getVoidTy(getGlobalContext()),
-                           argTypes, false);
+                                          argTypes, false);
 
   mainFunction = Function::Create(ftype, GlobalValue::InternalLinkage,
                                   "main", module);
 
   BasicBlock *bblock = BasicBlock::Create(getGlobalContext(),
                                           "entry", mainFunction, 0);
+
   /* header */
   // declare void @memset
   Type *memset_params_type[] = {
@@ -48,7 +51,7 @@ void CodeGenContext::generateCode(NBlock& root)
   // call memset
   Value*memset_params[]={
     ptr_arr,
-    ConstantInt::get(gC,APInt(8, 97)),
+    ConstantInt::get(gC,APInt(8, MIN_ASCII)),
     val_mem,
     ConstantInt::get(gC,APInt(32,1)),
     ConstantInt::get(gC,APInt(1,0))
@@ -66,7 +69,11 @@ void CodeGenContext::generateCode(NBlock& root)
   /* Push a new variable/block context */
   pushBlock(bblock);
   root.codeGen(*this); /* emit bytecode for the toplevel block */
-  ReturnInst::Create(getGlobalContext(), bblock);
+  BasicBlock *endblock = BasicBlock::Create(getGlobalContext(), "end", mainFunction, 0);
+  builder = (*this).currentBuilder();
+  builder->CreateBr(endblock);
+  builder->SetInsertPoint(endblock);
+  builder->CreateRetVoid();
   popBlock();
 
   std::cout << "Code is generated.\n";
@@ -160,7 +167,7 @@ Value* NValOp::codeGen(CodeGenContext& context)
   return tape_1;
 }
 
-Value* NPosOp::codeGen(CodeGenContext& context)
+Value *NPosOp::codeGen(CodeGenContext& context)
 {
   IRBuilder<> *builder = context.currentBuilder();
   APInt cur_value;
@@ -181,8 +188,47 @@ Value* NPosOp::codeGen(CodeGenContext& context)
   return context.cur_head;
 }
 
-void NLoop::codeGen()
+Value *NLoop::codeGen(CodeGenContext &context)
 {
-  std::cout << "正在生成NLoop" << endl;
-  //block.codeGen(context);
+  std::cout << "正在生成NLoop" << std::endl;
+  IRBuilder<> *builder = context.currentBuilder();
+  Function *main_func = builder->GetInsertBlock()->getParent();
+
+  BasicBlock *loopbb = BasicBlock::Create(getGlobalContext(), LOOP_LABEL,
+                                          main_func);
+  BasicBlock *testbb = BasicBlock::Create(getGlobalContext(), LOOP_TEST_LABEL,
+                                          main_func);
+
+  // Make Phi node
+  PHINode *cur_head_phi =
+    PHINode::Create(PointerType::getUnqual(IntegerType::getInt8Ty(getGlobalContext())),
+        2, HEAD_LABEL, testbb);
+  cur_head_phi->addIncoming(context.cur_head, context.currentBlock());
+  context.cur_head = cur_head_phi;
+
+  builder->CreateBr(loopbb);
+  builder->SetInsertPoint(loopbb);
+
+  block.codeGen(context);
+
+  builder->CreateBr(testbb);
+  builder->SetInsertPoint(testbb);
+
+  // testbb
+  {
+    Value *head_0 = cur_head_phi;
+    LoadInst *tape_0 = new LoadInst(head_0, TAPE_LABEL, testbb);
+
+    //%test.%d = icmp eq i8 %tape.%d, 0
+    ICmpInst *test_0 = new ICmpInst(*testbb, ICmpInst::ICMP_EQ, tape_0,
+        ConstantInt::get(getGlobalContext(), APInt(8, 0)), LOOP_TEST_LABEL);
+
+    builder->SetInsertPoint(context.currentBlock());
+    cur_head_phi->addIncoming(head_0, testbb);
+
+    BasicBlock *afterloop = BasicBlock::Create(getGlobalContext(), "entry",
+                                              main_func);
+    BranchInst::Create(afterloop, loopbb, test_0, testbb);
+    builder->SetInsertPoint(afterloop);
+  }
 }
